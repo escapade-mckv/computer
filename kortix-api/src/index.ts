@@ -811,10 +811,23 @@ export default {
 
       // ── WebSocket upgrade via subdomain ──────────────────────────────
       if (isWsUpgrade) {
-        const targetUrl = buildWsTargetUrl(sandboxId, port, url.pathname, url.searchParams);
+        const resolved = await resolveProvider(sandboxId).catch(() => null);
+        const provider = resolved?.provider ?? 'local_docker';
+
+        const wsTarget = resolveWsTarget(provider, {
+          sandboxId,
+          port,
+          remainingPath: url.pathname,
+          searchParams: url.searchParams,
+          slug: resolved?.slug,
+          serviceKey: resolved?.serviceKey,
+          proxyToken: resolved?.proxyToken,
+        });
+
         const success = server.upgrade(req, {
           data: {
-            targetUrl,
+            targetUrl: wsTarget.url,
+            upstreamHeaders: wsTarget.headers,
             upstream: null,
             buffered: [],
             bufferBytes: 0,
