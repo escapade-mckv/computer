@@ -143,6 +143,7 @@ function ConnectionItem({
   );
 }
 
+
 // ─── Empty state ─────────────────────────────────────────────────────────────
 
 function ConnectButton() {
